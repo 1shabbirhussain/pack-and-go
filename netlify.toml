@@ -1,0 +1,17 @@
+# Netlify build settings for Pack & Go Tourism (Next.js App Router).
+# Netlify's Next.js runtime (OpenNext adapter) is applied automatically and supports
+# SSR, ISR (revalidate), on-demand revalidation (/api/revalidate) and next/image.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Admin pages must never be indexed or framed.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"

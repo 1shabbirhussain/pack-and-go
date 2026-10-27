@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://your-domain.com", "https://your-site.netlify.app", "http://localhost:3000"],
+    "method": ["GET", "HEAD"],
+    "responseHeader": ["Content-Type", "Content-Length", "Range", "Accept-Ranges"],
+    "maxAgeSeconds": 3600
+  }
+]

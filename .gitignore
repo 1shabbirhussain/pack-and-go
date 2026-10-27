@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+.netlify
+.env
+.env.local
+.env*.local
+*.log
+coverage
+firebase-debug.log
+firestore-debug.log
+storage-debug.log
+ui-debug.log
+public/pdfjs
+.DS_Store
+tsconfig.tsbuildinfo

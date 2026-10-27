@@ -1,0 +1,96 @@
+rules_version = '2';
+
+// Pack & Go Tourism — Firestore Security Rules
+// Principle: deny by default. Public visitors may read PUBLISHED content and create
+// well-formed inquiries / pending reviews. Everything else requires an active admin listed in
+// /admins/{uid}. The admins collection itself can only be written from the Firebase console.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function adminDoc() { return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data; }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && adminDoc().active == true
+        && adminDoc().role in ['owner', 'editor'];
+    }
+    function isOwner() { return isAdmin() && adminDoc().role == 'owner'; }
+    function isPublished() { return resource.data.status == 'published'; }
+    function str(v, max) { return v is string && v.size() <= max; }
+    function optStr(d, k, max) { return !(k in d) || str(d[k], max); }
+
+    // ── Admin allow-list (managed manually in the console) ──
+    match /admins/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isOwner());
+      allow write: if false;
+    }
+
+    // ── Public content collections ──
+    match /packages/{id}     { allow read: if isPublished() || isAdmin(); allow create, update: if isAdmin(); allow delete: if isOwner(); }
+    match /destinations/{id} { allow read: if isPublished() || isAdmin(); allow create, update: if isAdmin(); allow delete: if isOwner(); }
+    match /pdfs/{id}         { allow read: if isPublished() || isAdmin(); allow create, update: if isAdmin(); allow delete: if isOwner(); }
+    match /gallery/{id}      { allow read: if isPublished() || isAdmin(); allow create, update: if isAdmin(); allow delete: if isOwner(); }
+    match /faqs/{id}         { allow read: if isPublished() || isAdmin(); allow create, update: if isAdmin(); allow delete: if isOwner(); }
+    match /sections/{id}     { allow read: if isPublished() || isAdmin(); allow create, update: if isAdmin(); allow delete: if isOwner(); }
+
+    // ── Settings: public read of site/contact/policies; only owners change them ──
+    match /settings/{doc} {
+      allow read: if doc in ['site', 'contact', 'policies'] || isAdmin();
+      allow write: if isOwner();
+    }
+
+    // ── Reviews: public may submit PENDING reviews only; admins moderate ──
+    match /reviews/{id} {
+      allow read: if isPublished() || isAdmin();
+      allow create: if isAdmin() || validPublicReview(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isOwner();
+    }
+    function validPublicReview(d) {
+      return d.keys().hasOnly(['name','location','tripName','travelMonth','rating','text','consent','status','source','order','verifiedBooking','createdAt'])
+        && d.keys().hasAll(['name','text','consent','status','source','createdAt'])
+        && d.status == 'pending' && d.source == 'website' && d.consent == true
+        && (!('verifiedBooking' in d) || d.verifiedBooking == false)
+        && (!('order' in d) || d.order == 0)
+        && d.createdAt == request.time
+        && str(d.name, 80) && d.name.size() >= 2
+        && str(d.text, 2000) && d.text.size() >= 20
+        && optStr(d, 'location', 80) && optStr(d, 'tripName', 160) && optStr(d, 'travelMonth', 40)
+        && (!('rating' in d) || d.rating == null || (d.rating is int && d.rating >= 1 && d.rating <= 5));
+    }
+
+    // ── Inquiries: write-only for the public, private to admins ──
+    match /inquiries/{id} {
+      allow create: if validInquiry(request.resource.data);
+      allow read: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'notes', 'updatedAt', 'updatedBy', 'assignedTo'])
+        && request.resource.data.status in ['new','contacted','quoted','booked','handled','closed','spam'];
+      allow delete: if isOwner();
+    }
+    function validInquiry(d) {
+      return d.keys().hasOnly(['type','name','phone','email','preferredContact','destinations','packageId','departureCity','startDate','flexibleDates','durationDays','adults','children','budget','transport','message','consent','status','source','createdAt'])
+        && d.keys().hasAll(['type','name','phone','adults','consent','status','createdAt'])
+        && d.type in ['custom','package','contact']
+        && d.status == 'new'
+        && d.consent == true
+        && d.createdAt == request.time
+        && str(d.name, 80) && d.name.size() >= 2
+        && str(d.phone, 25) && d.phone.size() >= 7 && d.phone.matches('^[+0-9 ()-]+$')
+        && optStr(d, 'email', 120)
+        && (!('preferredContact' in d) || d.preferredContact in ['whatsapp','call','email'])
+        && (!('destinations' in d) || (d.destinations is list && d.destinations.size() <= 12))
+        && optStr(d, 'packageId', 80) && optStr(d, 'departureCity', 60) && optStr(d, 'startDate', 20)
+        && (!('flexibleDates' in d) || d.flexibleDates is bool)
+        && (!('durationDays' in d) || (d.durationDays is int && d.durationDays >= 0 && d.durationDays <= 60))
+        && d.adults is int && d.adults >= 1 && d.adults <= 200
+        && (!('children' in d) || (d.children is int && d.children >= 0 && d.children <= 100))
+        && optStr(d, 'budget', 60) && optStr(d, 'transport', 80) && optStr(d, 'message', 2000)
+        && (!('source' in d) || d.source == 'website');
+    }
+
+    // Everything else is closed.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,33 @@
+rules_version = '2';
+
+// Pack & Go Tourism — Cloud Storage Security Rules
+// Anyone may read files under /public (brochures and images shown on the website).
+// Only active admins (checked against Firestore /admins/{uid}) may upload, and only PDFs or
+// images under size limits. Nothing else is readable or writable.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    match /public/brochures/{file} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.contentType == 'application/pdf'
+        && request.resource.size < 20 * 1024 * 1024;
+      allow delete: if isAdmin();
+    }
+
+    match /public/images/{file} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.contentType.matches('image/(jpeg|png|webp|avif)')
+        && request.resource.size < 8 * 1024 * 1024;
+      allow delete: if isAdmin();
+    }
+
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}
