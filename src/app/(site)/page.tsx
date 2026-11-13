@@ -4,6 +4,7 @@ import { ArrowRight, Backpack, BedDouble, Compass, FileText, Map, MessageCircle,
 import { Hero } from "@/components/site/Hero";
 import { CtaBand, DestinationCard, SectionHeading, TourCard } from "@/components/site/Blocks";
 import { ContactPanel } from "@/components/site/ContactPanel";
+import { NightlifeSection } from "@/components/site/Nightlife";
 import { FaqList } from "@/components/site/FaqList";
 import { ReviewCards } from "@/components/site/ReviewCards";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/Motion";
@@ -11,6 +12,7 @@ import { Picture } from "@/components/ui/Picture";
 import { getContact, getDestinations, getFaqs, getGallery, getPackages, getPdfs, getReviews, getSections } from "@/lib/content";
 import { imageUrl } from "@/lib/media";
 import type { Section } from "@/lib/schema";
+import { buildWhatsAppMessage, whatsappLink } from "@/lib/whatsapp";
 
 const ICONS: Record<string, typeof Compass> = {
   route: Route, compass: Compass, bed: BedDouble, receipt: Receipt, map: Map, "message-circle": MessageCircle, "shield-check": ShieldCheck, backpack: Backpack,
@@ -22,6 +24,11 @@ export default async function HomePage() {
   const [sections, packages, destinations, gallery, reviews, faqs, pdfs, contact] = await Promise.all([
     getSections(), getPackages(), getDestinations(), getGallery(), getReviews(), getFaqs(), getPdfs(), getContact(),
   ]);
+
+  const partyWhatsApp = whatsappLink(
+    contact.whatsappNumber,
+    buildWhatsAppMessage({ greeting: contact.whatsappGreeting, extra: "I'd like to book a night / beach party (Karachi or Hyderabad). Date: \nGroup size: " }),
+  );
 
   const render = (s: Section) => {
     switch (s.key) {
@@ -104,6 +111,8 @@ export default async function HomePage() {
             </div>
           </section>
         );
+      case "nightlife":
+        return <NightlifeSection key={s.id} s={s} whatsappHref={partyWhatsApp} />;
       case "customTour":
         return (
           <CtaBand key={s.id} title={s.title || "Plan a custom trip"} text={s.subtitle} primary={{ href: s.ctaHref || "/custom-tour", label: s.ctaLabel || "Plan a custom trip" }} secondary={{ href: "/destinations", label: "Browse destinations" }} />

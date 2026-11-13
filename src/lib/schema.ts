@@ -233,6 +233,7 @@ export const sectionKey = z.enum([
   "destinations",
   "customTour",
   "whyUs",
+  "nightlife",
   "howItWorks",
   "reviews",
   "gallery",
@@ -246,6 +247,8 @@ export const sectionItem = z.object({
   title: z.string().max(120),
   text: optionalText(500),
   icon: optionalText(40),
+  /** Optional small label on the card, e.g. the city ("Karachi", "Hyderabad"). */
+  tag: z.string().max(40).optional(),
 });
 
 export const sectionSchema = z.object({

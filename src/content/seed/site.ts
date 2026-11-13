@@ -1,6 +1,6 @@
 /** Settings, homepage sections, FAQs and policies seed data. */
 import type { ContactSettings, Faq, Policies, Section, SiteSettings } from "@/lib/schema";
-import { FUEL_CLAUSE, PHOTOS, STANDARD_KIDS_POLICY } from "./shared";
+import { FUEL_CLAUSE, NIGHT_PHOTOS, PHOTOS, STANDARD_KIDS_POLICY } from "./shared";
 
 export const SEED_SITE: SiteSettings = {
   siteName: "Pack & Go Tourism",
@@ -148,13 +148,31 @@ export const SEED_SECTIONS: Section[] = [
     ],
   }),
   s({
-    id: "custom-tour", key: "customTour", order: 5,
+    id: "night-parties", key: "nightlife", order: 5,
+    eyebrow: "Night & beach parties · Karachi & Hyderabad",
+    title: "Weekend nights by the sea and the river",
+    subtitle: "Beach-hut nights, boat trips, bonfires and farmhouse pool parties for families, friends, birthdays and office groups — we arrange the venue, transport, BBQ dinner and music so you just show up.",
+    ctaLabel: "Book a party night", ctaHref: "",
+    secondaryCtaLabel: "Plan a custom event", secondaryCtaHref: "/custom-tour",
+    // One image per card, in the same order as the items below.
+    images: [NIGHT_PHOTOS.beachHut, NIGHT_PHOTOS.boat, NIGHT_PHOTOS.pool, NIGHT_PHOTOS.river, NIGHT_PHOTOS.lake, NIGHT_PHOTOS.seafood],
+    items: [
+      { title: "Beach-hut night at French Beach & Hawksbay", text: "A private hut on the sand with a bonfire, sea-breeze BBQ dinner and music till late.", icon: "waves", tag: "Karachi" },
+      { title: "Night boat trip & crabbing from Keamari", text: "Cruise past Manora under the stars, catch crabs and have them cooked fresh on board.", icon: "ship", tag: "Karachi" },
+      { title: "Farmhouse pool party", text: "Private farmhouse with a pool, lights, sound system and BBQ — ideal for birthdays and office get-togethers.", icon: "party", tag: "Karachi · Hyderabad" },
+      { title: "Indus riverside night at Jamshoro", text: "An evening by the river near Hyderabad with BBQ, bonfire and live music.", icon: "flame", tag: "Hyderabad" },
+      { title: "Keenjhar Lake bonfire & camping", text: "Lakeside huts, boating at sunset and a campfire night — an easy drive from both cities.", icon: "tent", tag: "Hyderabad · Karachi" },
+      { title: "Seafood night at Do Darya & Port Grand", text: "A group outing to Karachi's waterfront food streets, with transport there and back.", icon: "moon", tag: "Karachi" },
+    ],
+  }),
+  s({
+    id: "custom-tour", key: "customTour", order: 6,
     eyebrow: "Customized tours", title: "Have your own plan in mind?",
     subtitle: "Honeymoons, family holidays, school or office groups — share your dates, group size and budget and we'll design the trip.",
     ctaLabel: "Plan a custom trip", ctaHref: "/custom-tour",
   }),
   s({
-    id: "how-it-works", key: "howItWorks", order: 6,
+    id: "how-it-works", key: "howItWorks", order: 7,
     eyebrow: "How booking works", title: "Four simple steps",
     items: [
       { title: "Choose a tour", text: "Pick a package and your departure city, or send us a custom request.", icon: "map" },
@@ -163,11 +181,11 @@ export const SEED_SECTIONS: Section[] = [
       { title: "Pack & go", text: "Bring your CNIC, warm clothes and your sense of adventure.", icon: "backpack" },
     ],
   }),
-  s({ id: "reviews", key: "reviews", order: 7, eyebrow: "Traveller stories", title: "What our travellers say" }),
-  s({ id: "gallery", key: "gallery", order: 8, eyebrow: "Gallery", title: "Scenes from the north", ctaLabel: "Open the gallery", ctaHref: "/gallery" }),
-  s({ id: "brochures", key: "brochures", order: 9, eyebrow: "Brochures", title: "Read the full brochures", subtitle: "Open any brochure right here, page by page, or download it to share with your family.", ctaLabel: "Brochure library", ctaHref: "/brochures" }),
-  s({ id: "faq", key: "faq", order: 10, eyebrow: "FAQs", title: "Good to know before you go", ctaLabel: "All FAQs", ctaHref: "/faq" }),
-  s({ id: "contact", key: "contact", order: 11, eyebrow: "Contact", title: "Visit, call or message us" }),
+  s({ id: "reviews", key: "reviews", order: 8, eyebrow: "Traveller stories", title: "What our travellers say" }),
+  s({ id: "gallery", key: "gallery", order: 9, eyebrow: "Gallery", title: "Scenes from the north", ctaLabel: "Open the gallery", ctaHref: "/gallery" }),
+  s({ id: "brochures", key: "brochures", order: 10, eyebrow: "Brochures", title: "Read the full brochures", subtitle: "Open any brochure right here, page by page, or download it to share with your family.", ctaLabel: "Brochure library", ctaHref: "/brochures" }),
+  s({ id: "faq", key: "faq", order: 11, eyebrow: "FAQs", title: "Good to know before you go", ctaLabel: "All FAQs", ctaHref: "/faq" }),
+  s({ id: "contact", key: "contact", order: 12, eyebrow: "Contact", title: "Visit, call or message us" }),
 ];
 
 const f = (id: string, order: number, category: string, question: string, answer: string, showOnHome = false): Faq => ({

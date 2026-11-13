@@ -301,7 +301,7 @@ export const COLLECTIONS: Record<CollectionKey, CollectionConfig> = {
     publicHref: () => "/",
     defaults: () => ({ id: "", key: "whyUs", status: "draft", order: 99, eyebrow: "", title: "", subtitle: "", ctaLabel: "", ctaHref: "", secondaryCtaLabel: "", secondaryCtaHref: "", items: [], images: [], featuredIds: [] }),
     fields: [
-      { type: "select", name: "key", label: "Section type", options: ["hero", "featuredTours", "destinations", "customTour", "whyUs", "howItWorks", "reviews", "gallery", "brochures", "faq", "contact"].map((v) => ({ value: v, label: v })), width: "half" },
+      { type: "select", name: "key", label: "Section type", options: ["hero", "featuredTours", "destinations", "customTour", "whyUs", "nightlife", "howItWorks", "reviews", "gallery", "brochures", "faq", "contact"].map((v) => ({ value: v, label: v })), width: "half" },
       { type: "select", name: "status", label: "Visibility", options: PUBLISH, width: "half" },
       { type: "number", name: "order", label: "Position on page", width: "half" },
       { type: "slug", name: "id", label: "ID", from: "title" },
@@ -314,14 +314,15 @@ export const COLLECTIONS: Record<CollectionKey, CollectionConfig> = {
       { type: "text", name: "secondaryCtaHref", label: "Second button link", width: "half" },
       {
         type: "objectList", name: "items", label: "Items (feature cards / steps / hero chips)", itemTitle: (it) => (it.title as string) || "Item",
-        newItem: () => ({ title: "", text: "", icon: "" }),
+        newItem: () => ({ title: "", text: "", icon: "", tag: "" }),
         fields: [
           { type: "text", name: "title", label: "Title" },
           { type: "textarea", name: "text", label: "Text", rows: 2 },
-          { type: "select", name: "icon", label: "Icon", options: ["", "map-pin", "utensils", "compass", "route", "bed", "receipt", "map", "message-circle", "shield-check", "backpack"].map((v) => ({ value: v, label: v || "Default" })) },
+          { type: "text", name: "tag", label: "Tag / city (optional, e.g. Karachi)" },
+          { type: "select", name: "icon", label: "Icon", options: ["", "map-pin", "utensils", "compass", "route", "bed", "receipt", "map", "message-circle", "shield-check", "backpack", "waves", "flame", "ship", "music", "moon", "tent", "sparkles", "party"].map((v) => ({ value: v, label: v || "Default" })) },
         ],
       },
-      { type: "imageList", name: "images", label: "Images (hero slideshow)" },
+      { type: "imageList", name: "images", label: "Images (hero slideshow, or one per card for night parties — same order as items)" },
       { type: "refList", name: "featuredIds", label: "Featured tours (for 'featuredTours')", collection: "packages", labelField: "title" },
     ],
   },

@@ -91,3 +91,22 @@ export const PHOTOS = {
   faisalMosque: img("faisal-mosque-islamabad", "Aerial view of Faisal Mosque in Islamabad with the Margalla Hills behind", 668, 446),
   cliffView: img("traveller-cliff-view", "A traveller standing on a rocky ledge overlooking rugged mountains", 1664, 1916),
 } as const;
+
+/** Placeholder illustrations for the night & beach parties cards. Replace with real event photos. */
+const night = (file: string, alt: string): ImageRef => ({
+  src: { kind: "bundled", path: `/images/photos/night/${file}.webp`, url: "" },
+  alt,
+  width: 1200,
+  height: 800,
+  credit: "Placeholder illustration — replace with a real photo",
+  rights: "owned",
+});
+
+export const NIGHT_PHOTOS = {
+  beachHut: night("beach-hut-night", "Illustration of a beach hut at night with a bonfire, string lights and the moon over the sea"),
+  boat: night("night-boat-crabbing", "Illustration of a lit-up boat on the harbour at night with the city skyline behind"),
+  pool: night("farmhouse-pool-party", "Illustration of a farmhouse pool party at night with string lights and palm trees"),
+  river: night("indus-riverside-night", "Illustration of a riverside bonfire and BBQ grill under a starry sky"),
+  lake: night("keenjhar-lake-camping", "Illustration of glowing tents and a campfire beside a lake at night"),
+  seafood: night("seafood-waterfront-night", "Illustration of seafood tables on a waterfront at night with city lights"),
+};
